@@ -1,47 +1,26 @@
 services:
-  postgres:
-    image: postgres:17
-    container_name: postgres17
-    environment:
-      POSTGRES_DB: metabase
-      POSTGRES_USER: metabase
-      POSTGRES_PASSWORD: metabase
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - metanet
-
   metabase:
     image: metabase/metabase:latest
     container_name: metabase
-    depends_on:
-      - postgres
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    network_mode: host
+    # ports:
+    #   - "3000:3000"
     environment:
       TZ: "Asia/Makassar"
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: metabase
-      MB_DB_PORT: 5432
-      MB_DB_USER: metabase
-      MB_DB_PASS: metabase
-      MB_DB_HOST: postgres
+      MB_DB_PORT: 25060
+      MB_DB_USER: doadmin
+      MB_DB_PASS: AVNS_7Emih2T6uHf-2MLnjXN
+      MB_DB_HOST: private-ainum-pg-do-user-8702993-0.j.db.ondigitalocean.com
+    volumes:
+      - metabase_data:/metabase-data
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
       interval: 15s
       timeout: 5s
       retries: 5
-    networks:
-      - metanet
-
-networks:
-  metanet:
-    driver: bridge
 
 volumes:
-  postgres_data:
   metabase_data:
